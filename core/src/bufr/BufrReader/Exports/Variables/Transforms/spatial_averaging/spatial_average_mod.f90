@@ -185,11 +185,9 @@ CONTAINS
           longitude(fov(iobs),scanline(iobs))     = lon(iobs)
           rainflag(fov(iobs),scanline(iobs))      = rflg(iobs)
           bt_image(fov(iobs),scanline(iobs),:) = bt_obs(:,iobs)
-          scanline_back(fov(iobs),scanline(iobs)) = iobs
        enddo
        write(*,*) 'Spatial_Average: latitude min/max      = ', minval(latitude), maxval(latitude)
        write(*,*) 'Spatial_Average: longitude min/max     = ', minval(longitude), maxval(longitude)
-       write(*,*) 'Spatial_Average: scanline_back min/max = ', minval(scanline_back), maxval(scanline_back)
        write(*,*) 'Spatial_Average: bt_image min/max      = ', minval(bt_image), maxval(bt_image)
        write(*,*) 'Spatial_Average: rainflag min/max      = ', minval(rainflag), maxval(rainflag)
 
@@ -214,7 +212,6 @@ CONTAINS
                 channel_loop: do ic = 1, nchanl
                    xnum   = 0.0_r_kind
                    mta    = 0.0_r_kind
-
                    if (any(bt_image(np1:np2,ns1:ns2,ic) < btmin .or. &
                            bt_image(np1:np2,ns1:ns2,ic) > btmax)) then
                       bt_obs(ic,iobs) = missingval
@@ -222,7 +219,7 @@ CONTAINS
 !                     ! Calculate distance of each fov to the center fov
                       box_y1: do is = ns1, ns2
                       box_x1: do ip = np1, np2
-                      if(rainflag(ip,is) == 0_i_kind)then
+                       if(rainflag(ip,is) == 0_i_kind)then
                          lat1 = latitude(ifov,iscan)    ! lat of the center fov
                          lon1 = longitude(ifov,iscan)   ! lon of the center fov
                          lat2 = latitude(ip,is)
@@ -236,7 +233,7 @@ CONTAINS
                          endif
                          xnum   = xnum+wgt
                          mta    = mta +wgt*bt_image(ip,is,ic)
-                      endif
+                       endif
                       enddo box_x1
                       enddo box_y1
                       bt_obs(ic,iobs) = mta/xnum
